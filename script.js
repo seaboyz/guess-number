@@ -4,74 +4,78 @@ var secrectNumber = Math.trunc(Math.random() * 20 + 1); //?
 
 var score = 20;
 
-var messageElement = document.querySelector(".message");
-var scoreElement = document.querySelector(".score");
-var bodyElement = document.querySelector("body");
-var numberElement = document.querySelector(".number");
-var highscoreElement = document.querySelector(".highscore");
-var checkButton = document.querySelector(".check");
-var againButton = document.querySelector(".again");
-var guessElement = document.querySelector(".guess");
+const scoreElement = document.querySelector(".score");
+const bodyElement = document.querySelector("body");
+const numberElement = document.querySelector(".number");
+const highscoreElement = document.querySelector(".highscore");
+const checkButton = document.querySelector(".check");
+const againButton = document.querySelector(".again");
+const guessElement = document.querySelector(".guess");
 
-function handleCheck() {
-  var guess = document.querySelector(".guess").value;
-
-  switch (true) {
-    // No input
-    case guess === "":
-      messageElement.textContent = "🚫 No Number!";
-      break;
-
-    // Win
-    case Number(guess) === secrectNumber:
-      messageElement.textContent = "🎉 Correct Number!";
-      bodyElement.style.backgroundColor = "#60b347";
-      numberElement.style.width = "30rem";
-      numberElement.textContent = secrectNumber;
-      if (score > highscoreElement.textContent) {
-        highscoreElement.textContent = score;
-        guessElement.disabled = true;
-      }
-      break;
-
-    // Too high
-    case Number(guess) > secrectNumber:
-      if (score > 0) {
-        messageElement.textContent = "📈 Too high!";
-        score = score - 1;
-        scoreElement.textContent = score;
-      }
-      if (score === 0) {
-        messageElementElement.textContent = "💥 You Lost!";
-      }
-      break;
-
-    // Too low
-    case Number(guess) < secrectNumber:
-      if (score > 0) {
-        messageElement.textContent = "📉 Too Low!";
-        score = score - 1;
-        scoreElement.textContent = score;
-      }
-      if (score === 0) {
-        messageElement.textContent = "💥 You Lost!";
-      }
-      break;
-  }
+function displayMessage(message) {
+    document.querySelector(".message").textContent = message;
 }
 
-function handleAgain() {
-  guessElement.disabled = false;
-  score = 20;
-  scoreElement.textContent = score;
-  messageElement.textContent = "Start guessing...";
-  bodyElement.style.backgroundColor = "#222";
-  guessElement.value = "";
-  numberElement.style.width = "15rem";
-  numberElement.textContent = "?";
-  secrectNumber = Math.trunc(Math.random() * 20 + 1);
+function handleCheck() {
+    var guess = document.querySelector(".guess").value;
+
+    switch (true) {
+        // No input
+        case guess === "":
+            displayMessage("🚫 No Number!");
+            break;
+
+        // When guess is right
+        case Number(guess) === secrectNumber:
+            displayMessage("🎉 Correct Number!");
+
+            bodyElement.style.backgroundColor = "#60b347";
+            numberElement.style.width = "30rem";
+            numberElement.textContent = secrectNumber;
+            if (score > highscoreElement.textContent) {
+                highscoreElement.textContent = score;
+                guessElement.disabled = true;
+                checkButton.disabled = true;
+            }
+            break;
+
+        // When guess is wrong
+        case Number(guess) !== secrectNumber:
+            score = score - 1;
+            scoreElement.textContent = score;
+
+            // Too high
+            if (Number(guess) > secrectNumber) {
+                displayMessage("📈 Too high!");
+            }
+            // Too low
+            if (Number(guess) < secrectNumber) {
+                displayMessage("📉 Too low!");
+            }
+            // Lost
+            if (score === 0) {
+                displayMessage("💥 You Lost!");
+                bodyElement.style.backgroundColor = "#e74c3c";
+                guessElement.disabled = true;
+                checkButton.disabled = true;
+            }
+            break;
+    }
+}
+
+function restartGame() {
+    guessElement.disabled = false;
+    checkButton.disabled = false;
+    score = 20;
+    scoreElement.textContent = score;
+    displayMessage("Start guessing...");
+    bodyElement.style.backgroundColor = "#222";
+    guessElement.value = "";
+    numberElement.style.width = "15rem";
+    numberElement.textContent = "?";
+    secrectNumber = Math.trunc(Math.random() * 20 + 1);
 }
 
 checkButton.addEventListener("click", handleCheck);
 
-againButton.addEventListener("click", handleAgain);
+againButton.addEventListener("click", restartGame);
